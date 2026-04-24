@@ -9,8 +9,10 @@ import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Component
@@ -26,6 +28,11 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        var tokenSettings = TokenSettings.builder()
+                .refreshTokenTimeToLive(Duration.ofHours(8))
+                .reuseRefreshTokens(false)
+                .build();
+
         var webApp = registeredClientRepository.findByClientId("demo-web-app");
         if (webApp == null) {
             registeredClientRepository.save(
@@ -44,12 +51,13 @@ public class DataLoader implements ApplicationRunner {
                                     .requireProofKey(true)
                                     .requireAuthorizationConsent(true)
                                     .build())
+                            .tokenSettings(tokenSettings)
                             .build()
             );
-        } else if (webApp.getPostLogoutRedirectUris().isEmpty()) {
+        } else if (webApp.getTokenSettings().isReuseRefreshTokens()) {
             registeredClientRepository.save(
                     RegisteredClient.from(webApp)
-                            .postLogoutRedirectUri("http://localhost:3000")
+                            .tokenSettings(tokenSettings)
                             .build()
             );
         }
