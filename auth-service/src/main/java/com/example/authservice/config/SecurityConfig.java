@@ -89,8 +89,12 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.loginPage("/login"))
+            .logout(logout -> logout
+                .logoutSuccessUrl("http://localhost:3000")
+                .permitAll()
+            )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")
+                .ignoringRequestMatchers("/api/**", "/logout")
             );
 
         return http.build();

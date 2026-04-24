@@ -103,16 +103,18 @@ export async function refreshAccessToken() {
   if (tokens.id_token) localStorage.setItem('id_token', tokens.id_token);
 }
 
-export function logout() {
-  const idToken = localStorage.getItem('id_token');
+export async function logout() {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('id_token');
 
-  const params = new URLSearchParams({ post_logout_redirect_uri: window.location.origin });
-  if (idToken) params.set('id_token_hint', idToken);
+  try {
+    await fetch(`${AUTH_URL}/logout`, { method: 'POST', credentials: 'include' });
+  } catch {
+    // session may already be gone — proceed to login
+  }
 
-  window.location.href = `${AUTH_URL}/connect/logout?${params}`;
+  window.location.href = '/';
 }
 
 export function getAccessToken() {
