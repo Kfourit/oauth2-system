@@ -29,7 +29,7 @@ public class DataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         var tokenSettings = TokenSettings.builder()
-                .refreshTokenTimeToLive(Duration.ofHours(8))
+                .refreshTokenTimeToLive(Duration.ofHours(4))
                 .reuseRefreshTokens(false)
                 .build();
 
