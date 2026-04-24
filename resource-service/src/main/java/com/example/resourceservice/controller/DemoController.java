@@ -19,8 +19,7 @@ public class DemoController {
     @GetMapping("/api/me")
     public Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {
         return Map.of(
-                "subject", jwt.getSubject(),
-                "email", jwt.getClaimAsString("email") != null ? jwt.getClaimAsString("email") : "",
+                "email", jwt.getSubject(),
                 "scope", jwt.getClaimAsString("scope") != null ? jwt.getClaimAsString("scope") : ""
         );
     }

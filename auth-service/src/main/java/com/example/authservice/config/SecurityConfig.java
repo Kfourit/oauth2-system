@@ -88,7 +88,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/register", "/login", "/error").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(Customizer.withDefaults())
+            .formLogin(form -> form.loginPage("/login"))
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/api/**")
             );

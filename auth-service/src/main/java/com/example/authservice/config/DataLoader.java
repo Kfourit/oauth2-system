@@ -26,7 +26,8 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (registeredClientRepository.findByClientId("demo-web-app") == null) {
+        var webApp = registeredClientRepository.findByClientId("demo-web-app");
+        if (webApp == null) {
             registeredClientRepository.save(
                     RegisteredClient.withId(UUID.randomUUID().toString())
                             .clientId("demo-web-app")
@@ -34,6 +35,7 @@ public class DataLoader implements ApplicationRunner {
                             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                             .redirectUri("http://localhost:3000/callback")
+                            .postLogoutRedirectUri("http://localhost:3000")
                             .scope(OidcScopes.OPENID)
                             .scope(OidcScopes.PROFILE)
                             .scope("read")
@@ -42,6 +44,12 @@ public class DataLoader implements ApplicationRunner {
                                     .requireProofKey(true)
                                     .requireAuthorizationConsent(true)
                                     .build())
+                            .build()
+            );
+        } else if (webApp.getPostLogoutRedirectUris().isEmpty()) {
+            registeredClientRepository.save(
+                    RegisteredClient.from(webApp)
+                            .postLogoutRedirectUri("http://localhost:3000")
                             .build()
             );
         }

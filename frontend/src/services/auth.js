@@ -104,10 +104,15 @@ export async function refreshAccessToken() {
 }
 
 export function logout() {
+  const idToken = localStorage.getItem('id_token');
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('id_token');
-  window.location.href = '/';
+
+  const params = new URLSearchParams({ post_logout_redirect_uri: window.location.origin });
+  if (idToken) params.set('id_token_hint', idToken);
+
+  window.location.href = `${AUTH_URL}/connect/logout?${params}`;
 }
 
 export function getAccessToken() {
@@ -116,4 +121,19 @@ export function getAccessToken() {
 
 export function isLoggedIn() {
   return !!getAccessToken();
+}
+
+export async function registerUser(name, email, password) {
+  const res = await fetch(`${AUTH_URL}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err || 'Registration failed');
+  }
+
+  return res.json();
 }

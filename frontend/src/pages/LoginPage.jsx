@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { startLogin } from '../services/auth';
 
 export default function LoginPage() {
@@ -22,6 +23,12 @@ export default function LoginPage() {
         >
           Sign in
         </button>
+        <p style={{ marginTop: 24, fontSize: 14, color: '#666' }}>
+          Don't have an account?{' '}
+          <Link to="/signup" style={{ color: '#4f46e5', textDecoration: 'none', fontWeight: 500 }}>
+            Create one
+          </Link>
+        </p>
       </div>
     </div>
   );
